@@ -5,9 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>Chaos Game 3D</title>
     <script src="scripts/vendor/p5/p5.js"></script>
-    <script src="scripts/sierpinski3d.js"></script>
-    <style> body {padding: 0; margin: 0;} </style>
+    <style> 
+        body { 
+            padding: 0; 
+            margin: 0;
+            color: #fff;
+            background-color: black;
+        } 
+        nav {
+            position: fixed;
+            top: 1rem;
+            width: 100%;
+        }
+        footer {
+            position: fixed;
+            bottom: 1rem;
+            width: 100%;
+            text-align: left;
+            padding: 0 1rem;;
+        }
+
+        button {
+            background:none;
+            border:none;
+            font-size:1em;
+            color: white;
+        }
+
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0 1rem;
+            overflow: hidden;
+        }
+
+        li {
+            float: right;
+        }
+
+        li button {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 16px;
+            text-decoration: none;
+        }
+
+
+        #js-span-totalVertices {
+            
+        } 
+
+        /* unvisited link */
+        a:link {
+            color: #fff;
+            text-decoration: none;
+        }
+        /* visited link */
+        a:visited {color: #fff;}
+        /* mouse over link */
+        a:hover {color: hotpink;}
+        /* selected link */
+        a:active {color: #fff;}
+
+    </style>
 </head>
 <body>
+    <nav>
+        <ul>
+            <li style="float: left;"><span id="js-span-totalVertices">Vertices: 1</span></li>
+            <li><button id="js-btn-speedUp">>></button></li>
+            <li><button id="js-btn-slowDown"><<</button></li>
+            <li><button id="js-btn-pause">||</button></li>
+            <li><button id="js-btn-play">></button></li>
+        </ul>
+        
+
+    </nav>
+    <footer><a href="https://github.com/gregwattonville/chaos-game-3d"> 
+        <img style="width: 16px;" src="assets/vendor/GitHub-Mark-Light-32px.png" alt="GitHub Logo"> 
+        <span>See the Code</span>
+    </a></footer>
+    <script src="scripts/sierpinski3d.js"></script>
 </body>
 </html>

@@ -14,6 +14,11 @@ const _cornerVertices = [
     [-100,100,-100],
     [0,0,100]    
 ];
+const _jsTotalVertices = document.getElementById('js-span-totalVertices');
+const _speeds = [120, 60, 30, 15, 6, 1];
+const _verticeLimit = 50000;
+let _speed = 0;
+let _paused = false;
 
 let _scaleValue = 1.5;
 let diffVector;
@@ -96,15 +101,18 @@ console.log(`Starting height: ${startingVertexZ}, x: ${startingBaseLength}, and 
 
 
 
-let epochs = 15;
-let epoch = epochs;
+let epochs = _speeds[_speed];
 let mag;
 let delta;
 let vertices = [
     [-100,-100,-100]
 ];
 let midpointVector;
+let font;
 
+function preload() {
+    //font = loadFont('Source Code Pro');
+}
 
 function setup() {
     createCanvas(_w, _h, WEBGL);
@@ -130,7 +138,8 @@ function setup() {
 
 function draw() {
     background(_backgroundColor);
-
+    // Print total vertices on screen. The +1 is for the random starting vertex
+    _jsTotalVertices.innerHTML = 'Vertices: '+(vertices.length+1);
     //let camX = map(mouseX, 0, w, -w/4, w/4);
     //camera(camX,0,(h/3) / tan(PI/6), 0,0,0, 0,1,0);
     scale(_scaleValue);
@@ -141,6 +150,8 @@ function draw() {
     //rotateY(frameCount * 0.01);
     rotateZ(frameCount * 0.005);
     //print(frameCount * 0.01);
+    //rotateY(map(mouseY, 0, height, 0, -3));
+    //rotateZ(map(mouseX, 0, width, 0, 3));
 
     drawPyramidByLines();
     drawCornersByVertices();
@@ -154,7 +165,7 @@ function draw() {
     stroke(_verticesColor);
     strokeWeight(3);
     
-    // bginShape will crash if there is no vertex provided
+    // at least one vertex must be provided or beginShape will crash
     if (vertices.length > 0) {
         beginShape(POINTS);
             for (let i = 0; i < vertices.length; i++) {
@@ -172,24 +183,54 @@ function draw() {
     line(randomCornerVector.x, randomCornerVector.y, randomCornerVector.z, animationVector.x, animationVector.y, animationVector.z);
     //mag -= 5;
 
-    epoch -= 1;
-    
-    mag -= delta;
+    if (!_paused) {
+        epochs -= 1;
+        mag -= delta;
+    }
     //print(mag);
     //print(epoch);
-    if (epoch < 1) {
-        epoch = epochs;
+    if ((epochs < 1) && !_paused && (vertices.length < _verticeLimit)) {
+        epochs = _speeds[_speed];
         vertices.push([midpointVector.x, midpointVector.y, midpointVector.z]);
         randomCornerVector = getRandomCornerVector();
         diffVector = p5.Vector.sub(midpointVector, randomCornerVector);
+
         midpointVector = p5.Vector.mult(diffVector, 0.5);
         midpointVector.add(randomCornerVector);
         mag = diffVector.mag();
         delta = (mag/2)/epochs;
-        print(vertices.length);
+        //print(vertices.length);
     }
     
 }
+
+document.getElementById("js-btn-play").addEventListener("click", function(){
+    console.log('play');
+    if (_paused) {
+        _paused = false;
+    }
+});
+
+document.getElementById("js-btn-pause").addEventListener("click", function(){
+    console.log('pause');
+    if (!_paused) {
+        _paused = true;
+    }
+});
+
+document.getElementById("js-btn-speedUp").addEventListener("click", function(){
+    console.log('speedUp');
+    if (_speed != _speeds.length-1) {
+        _speed += 1;
+    }
+});
+
+document.getElementById("js-btn-slowDown").addEventListener("click", function(){
+    console.log('slowDown');
+    if (_speed != 0) {
+        _speed -= 1;
+    }
+});
 
 if ( window.innerWidth <= window.innerHeight ) {
     _scaleValue = window.innerWidth/200 * 0.45;
