@@ -19,10 +19,25 @@ const _speeds = [120, 60, 30, 15, 6, 1];
 const _verticeLimit = 50000;
 let _speed = 0;
 let _paused = false;
+let _rotate = false;
 
 let _scaleValue = 1.5;
 let diffVector;
 let endVector;
+
+let _angle = {
+    x: -Math.PI/2,
+    y: Math.PI/6,
+}
+
+let _mouse = {
+    wheelScale: 1,
+    scaleFactor: 0.25,
+    currentFactor: 6,
+    maxFactor: 20,
+    lastX: -1,
+    lastY: -1,
+}
 
 
 
@@ -134,24 +149,29 @@ function setup() {
     delta = (mag/2)/epochs;
     print(delta);
 
+    rotateX(Math.PI/2);
+    rotateZ(-Math.PI/6);
+
+    _mouse.wheelScale
 }
 
 function draw() {
     background(_backgroundColor);
     // Print total vertices on screen. The +1 is for the random starting vertex
     _jsTotalVertices.innerHTML = 'Vertices: '+(vertices.length+1);
-    //let camX = map(mouseX, 0, w, -w/4, w/4);
-    //camera(camX,0,(h/3) / tan(PI/6), 0,0,0, 0,1,0);
-    scale(_scaleValue);
-    rotateX(PI/2);
-    rotateZ(-PI/6);
+    // Messing around with camera 
+    // let camX = map(mouseX, 0, w, -w/4, w/4);
+    // camera(camX,0,(h/3) / tan(PI/6), 0,0,0, 0,1,0);
+    scale(_mouse.wheelScale);
 
     //rotateX(frameCount * 0.01);
     //rotateY(frameCount * 0.01);
-    rotateZ(frameCount * 0.005);
-    //print(frameCount * 0.01);
-    //rotateY(map(mouseY, 0, height, 0, -3));
-    //rotateZ(map(mouseX, 0, width, 0, 3));
+    if(_rotate) {
+        rotateY(-frameCount * 0.005);
+    }
+
+    rotateX(-_angle.x);
+    rotateZ(-_angle.y);
 
     drawPyramidByLines();
     drawCornersByVertices();
@@ -204,6 +224,41 @@ function draw() {
     
 }
 
+function mouseDragged() {
+    let x = mouseX;
+    let y = mouseY;
+
+    const factor = 10/_h;
+    let dx = factor * (x - _mouse.lastX);
+    let dy = factor * (y - _mouse.lastY);
+
+    _angle.x += dy;
+    _angle.y += dx;
+
+    _mouse.lastX = x;
+    _mouse.lastY = y;
+    // prevent default
+    return false;
+}
+
+
+
+function mouseWheel(event) {
+    //print(event.delta);
+    //move the square according to the vertical scroll amount
+    if ( (event.delta < 0) && (_mouse.currentFactor > 1) ) {
+        _mouse.wheelScale -= _mouse.scaleFactor;
+        _mouse.currentFactor--;
+    }
+    if ( (event.delta > 0) && (_mouse.currentFactor < _mouse.maxFactor) ) {
+        _mouse.wheelScale += _mouse.scaleFactor;
+        _mouse.currentFactor++;
+    }
+    //print(_mouse.wheelScale);
+    //uncomment to block page scrolling
+    return false;
+  }
+
 document.getElementById("js-btn-play").addEventListener("click", function(){
     console.log('play');
     if (_paused) {
@@ -232,9 +287,16 @@ document.getElementById("js-btn-slowDown").addEventListener("click", function(){
     }
 });
 
+document.getElementById("js-btn-rotate").addEventListener("click", function(){
+    console.log('pause');
+    _rotate = !_rotate;
+});
+
 if ( window.innerWidth <= window.innerHeight ) {
     _scaleValue = window.innerWidth/200 * 0.45;
+    _mouse.wheelScale = _scaleValue;
 } else {
     _scaleValue = window.innerHeight/200 * 0.45;
+    _mouse.wheelScale = _scaleValue;
 }
 
