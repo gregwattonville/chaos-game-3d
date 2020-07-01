@@ -15,6 +15,7 @@ const _cornerVertices = [
     [0,0,100]    
 ];
 const _jsTotalVertices = document.getElementById('js-span-totalVertices');
+const _jsBtnPlayPause = document.getElementById('js-btn-playPause');
 const _speeds = [120, 60, 30, 15, 6, 1];
 const _verticeLimit = 50000;
 let _speed = 0;
@@ -36,9 +37,22 @@ let _mouse = {
     currentFactor: 6,
     maxFactor: 20,
     lastX: -1,
-    lastY: -1,
+    lastY: -1
 }
 
+let _plane = {
+    addPlane: false,
+    color: '#808588',
+    rotateX: Math.PI/2,
+    translate: {
+        x: 0,
+        y:200
+    },
+    size: {
+        x: 800,
+        y: 800
+    }
+}
 
 
 const getRandomInt = (max) => {
@@ -62,10 +76,11 @@ const drawCornersByVertices = () => {
     for (let i = 0; i < _cornerVertices.length; i++) {
         const p = _cornerVertices[i];
         push()
-        stroke(_cornersColor);
-        //strokeWeight(1);
-        translate(p[0],p[1],p[2]);
-        sphere(3);
+            noStroke();
+            fill(_cornersColor);
+            //strokeWeight(1);
+            translate(p[0],p[1],p[2]);
+            sphere(3);
         pop()
     }
 };
@@ -166,6 +181,18 @@ function draw() {
 
     //rotateX(frameCount * 0.01);
     //rotateY(frameCount * 0.01);
+    
+
+    if ( _plane.addPlane ) {
+        push();
+            noStroke();
+            fill( _plane.color );
+            translate(  _plane.translate.x,_plane.translate.y);
+            rotateX( _plane.rotateX );
+            plane( _plane.size.x, _plane.size.y);
+        pop();
+    }
+
     if(_rotate) {
         rotateY(-frameCount * 0.005);
     }
@@ -259,16 +286,14 @@ function mouseWheel(event) {
     return false;
   }
 
-document.getElementById("js-btn-play").addEventListener("click", function(){
-    console.log('play');
+document.getElementById("js-btn-playPause").addEventListener("click", function(){
     if (_paused) {
+        console.log('play');
+        _jsBtnPlayPause.innerHTML = '||';
         _paused = false;
-    }
-});
-
-document.getElementById("js-btn-pause").addEventListener("click", function(){
-    console.log('pause');
-    if (!_paused) {
+    } else {
+        console.log('pause');
+        _jsBtnPlayPause.innerHTML = '>';
         _paused = true;
     }
 });
@@ -290,6 +315,11 @@ document.getElementById("js-btn-slowDown").addEventListener("click", function(){
 document.getElementById("js-btn-rotate").addEventListener("click", function(){
     console.log('pause');
     _rotate = !_rotate;
+});
+
+document.getElementById("js-btn-addPlane").addEventListener("click", function(){
+    console.log('add plane');
+    _plane.addPlane = !_plane.addPlane
 });
 
 if ( window.innerWidth <= window.innerHeight ) {
