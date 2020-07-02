@@ -147,27 +147,47 @@ function preload() {
 function setup() {
     createCanvas(_w, _h, WEBGL);
 
+    // Random starting point vector inside pyramid
     startingVector = createVector(randomStartingVertex[0], randomStartingVertex[1], randomStartingVertex[2]);
     
+    // Pick a random corner of the pyramid
     randomCornerVector = getRandomCornerVector();
+    // takes the difference of the two vectors and returns
+    // the distance from the random corner to the random point and with direction toward the random point
     diffVector = p5.Vector.sub(startingVector, randomCornerVector);
 
     //diffVector.normalize();
     print(randomCornerVector);
     print(diffVector);
     
-    
+    // Scale the distance vector by half
+    // This is really just for precision. The last animation vector should be at the midpoint, but why not just find it exactly
     midpointVector = p5.Vector.mult(diffVector, 0.5);
+    // add the random corner vector to the vector contain the scaled vector
+    // the resulting midpointVector contains exact coornidates of midpoint
+    // The midpoint isn't stored because we want animate first
+    // After animation complete midpint vector is stored and drawn
     midpointVector.add(randomCornerVector);
+
+
+    // Animation is done by scaling the vector back each time the draw loop is called
+    // This calculates home much to scale back depending on the set speed
+    // The speed sets the number of increments, how many times the vector is animated back before it reaches the midpoint
+    // Higher speed means fewer increments and fewer times the draw loop runs before the vector is scaled back to the midpoint
+    // Vice versa, slower speed equals more incremnts so the draw loop takes longer to scale back the vector
+    // First get the current magnitude of the vector from the random corner to the random point
     mag = diffVector.mag();
     print(mag);
+    // Next take half of the magnitude because we are only going to animate to the the midpoint or half way between
+    // Then take that and divide it by the number of increments or speed to get delta 
+    // Delta is how much the vector needs to be scaled back each time the draw loop is called
     delta = (mag/2)/epochs;
     print(delta);
 
+    // Reorientate pyramid so the tip is at the top and it is turned so that one corner is coming toward the screen
     rotateX(Math.PI/2);
     rotateZ(-Math.PI/6);
 
-    _mouse.wheelScale
 }
 
 function draw() {
@@ -182,7 +202,7 @@ function draw() {
     //rotateX(frameCount * 0.01);
     //rotateY(frameCount * 0.01);
     
-
+    // Set by html button
     if ( _plane.addPlane ) {
         push();
             noStroke();
@@ -193,6 +213,7 @@ function draw() {
         pop();
     }
 
+    // Set by html button
     if(_rotate) {
         rotateY(-frameCount * 0.005);
     }
@@ -236,6 +257,8 @@ function draw() {
     }
     //print(mag);
     //print(epoch);
+    // if the vector has been scaled by to midpoint
+    // reset epoches, pick new random corner, find midpoint, and calulate new delta. Make sure to adjust if speed has changed
     if ((epochs < 1) && !_paused && (vertices.length < _verticeLimit)) {
         epochs = _speeds[_speed];
         vertices.push([midpointVector.x, midpointVector.y, midpointVector.z]);
@@ -272,7 +295,7 @@ function mouseDragged() {
 
 function mouseWheel(event) {
     //print(event.delta);
-    //move the square according to the vertical scroll amount
+    //if mouse wheel event is negative zoom out; if positive zoom in
     if ( (event.delta < 0) && (_mouse.currentFactor > 1) ) {
         _mouse.wheelScale -= _mouse.scaleFactor;
         _mouse.currentFactor--;
@@ -322,6 +345,7 @@ document.getElementById("js-btn-addPlane").addEventListener("click", function(){
     _plane.addPlane = !_plane.addPlane
 });
 
+// Set initial scale of pyramid based on size of window
 if ( window.innerWidth <= window.innerHeight ) {
     _scaleValue = window.innerWidth/200 * 0.45;
     _mouse.wheelScale = _scaleValue;
