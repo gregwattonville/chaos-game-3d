@@ -12,7 +12,7 @@ View it online: [gregwattonville.github.io/chaos-game-3d/](https://gregwattonvil
 
 ## Background
 
-As a teacher, I want my students to explore mathematics; however, this was the result of my own exploration and wanting to learn and play around in a three deminisional space. This animation does provide a new perspective and twist on the 2D Sierpinski triangle and getting to transform pyramid in various ways makes things interesting.
+As a teacher, I want my students to explore mathematics; however, this was the result of my own exploration and wanting to learn and play around in a three dimensional space. This animation does provide a new perspective and twist on the 2D Sierpinski triangle and getting to transform pyramid in various ways makes things interesting.
 
 
 ## License
