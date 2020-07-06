@@ -231,7 +231,7 @@ function draw() {
     endShape();
 
     stroke(_verticesColor);
-    strokeWeight(3);
+    strokeWeight(2);
     
     // at least one vertex must be provided or beginShape will crash
     if (vertices.length > 0) {
